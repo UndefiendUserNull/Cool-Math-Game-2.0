@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include "Utils.hpp"
+#include "Globals.h"
 
 enum class GameType
 {
@@ -13,12 +14,13 @@ enum class GameType
 class Game
 {
 public:
-    Game(GameType p_gameType) : m_gameType{p_gameType} {};
+    Game(GameType p_gameType, Globals p_globals) : m_gameType{p_gameType}, m_globals{p_globals} {};
 
     void startGame();
 
 private:
     GameType m_gameType{};
+    Globals m_globals{};
 
     int m_minX = 0;
     int m_maxX = 10;
@@ -114,20 +116,27 @@ void Game::startGame()
     while (true)
     {
         std::cout << getQuestion() << '\n';
+
+        if (m_globals.getCheatEnabled())
+            std::cout << getAnswer() << '\n';
+
         userInput = Utils::getUserInputInt("> ");
 
         if (userInput != getAnswer())
         {
-            Utils::printColoredText("Wrong !, You ended with " + std::to_string(m_streak), Utils::Color::Red);
+            Utils::printColoredText("Wrong !, You ended with " + std::to_string(m_streak) + " Streak", Utils::Color::Red);
             Utils::pressToContinue();
             break;
         }
+
         else
         {
             incrementAllAndRandomize();
             correctAnswers++;
+
             Utils::printColoredText("Correct !", Utils::Color::BrightGreen);
-            if (correctAnswers == 5)
+
+            if (correctAnswers == m_globals.getClearOn())
                 Utils::clearScreen();
         }
     }
@@ -135,6 +144,11 @@ void Game::startGame()
 
 int main()
 {
-    Game g{GameType::Addition};
+    Globals globals{};
+
+    globals.setCheat(true);
+    globals.setClearOn(5);
+
+    Game g{GameType::Addition, globals};
     g.startGame();
 }
