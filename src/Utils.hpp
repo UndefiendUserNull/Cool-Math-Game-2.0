@@ -5,10 +5,9 @@
 #include <limits>
 #include <random>
 
+
 namespace Utils
 {
-
-
     enum class Color
     {
         Reset = 0,
@@ -96,6 +95,7 @@ namespace Utils
 
         return dist6(rng);
     }
+
 
     inline void pressToContinue()
     {
